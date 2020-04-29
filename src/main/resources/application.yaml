@@ -5,6 +5,7 @@ server:
 spring:
 
   kafka:
+    bootstrap-servers: http://kafka1-service.application-dev:9092
 
     consumer:
 
