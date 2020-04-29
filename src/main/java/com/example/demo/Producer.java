@@ -45,6 +45,11 @@ public ProducerFactory<String, String> producerFactory() {
     return new DefaultKafkaProducerFactory<>(configProps);
 }
 
+@Bean
+public KafkaTemplate<String, String> kafkaTemplate() {
+    return new KafkaTemplate<>(producerFactory());
+}
+
 
 public void sendMessage(String message){
 
