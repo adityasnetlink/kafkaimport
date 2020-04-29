@@ -1,39 +1,45 @@
 package com.example.demo;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 
-@Configuration
+
+
+
 public class SendeConfig {
-	@Value(value = "${kafka.bootstrap-servers}")
-    private String bootstrapAddress;
-	   @Bean
-	    public ProducerFactory<String, String> producerFactory() {
-	        Map<String, Object> configProps = new HashMap<>();
-	        configProps.put(
-	          ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, 
-	          bootstrapAddress);
-	        configProps.put(
-	          ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, 
-	          StringSerializer.class);
-	        configProps.put(
-	          ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, 
-	          StringSerializer.class);
-	        return new DefaultKafkaProducerFactory<>(configProps);
-	    }
-	 
-	    @Bean
-	    public KafkaTemplate<String, String> kafkaTemplate() {
-	        return new KafkaTemplate<>(producerFactory());
-	    }
+	private final Producer producer;
+
+	@Autowired
+
+	public SendeConfig(Producer producer) {
+
+	this.producer = producer;
+
+	}
+
+
+
+
+	@Scheduled(fixedDelay = 30000, initialDelay = 30000)
+	public void receivefromHttp() throws IOException {
+
+		 URL link = new URL("http://10.90.21.41:30985/metrics");
+	     URLConnection content = link.openConnection();
+	     BufferedReader in = new BufferedReader(
+	                             new InputStreamReader(
+	                             content.getInputStream()));
+	     String inputLine;
+	     
+	     while ((inputLine = in.readLine()) != null) 
+	     this.producer.sendMessage(inputLine);
+	     in.close();
+		
+	}
 
 }
