@@ -34,7 +34,7 @@ this.producer = producer;
 @Scheduled(fixedDelay = 30000, initialDelay = 30000)
 public void receivefromHttp() throws IOException {
 
-	 URL link = new URL("http://10.90.21.41:30987/metrics");
+	 URL link = new URL("http://10.90.21.41:30897/metrics");
      URLConnection content = link.openConnection();
      BufferedReader in = new BufferedReader(
                              new InputStreamReader(
